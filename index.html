@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Dwell-Based Clicking with WebGazer.js</title>
-    <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+    <!-- <script src="https://webgazer.cs.brown.edu/webgazer.js"></script> -->
 </head>
 <body>
     <div class="navbar">
-        <a href="calibration.html">Home</a>
+        <button class="modebutton">Mode</button>
+        <a href="calibration.html">calibration</a>
         <a>Exercise</a>
         <a>Create</a>
         <a>Saved</a>
 
     </div>
-    <h2> Look at the box for 1 second to "click" it</h2>
-    <div class="clickable" id="button1">Click Me</div>
-    <div class="clickable" id="button2">Or Me</div>
+    <div class="container">
+        <div class="clickable" id="button1">Fresh</div>
+        <div class="clickable" id="button2">Frozen</div>
+        <div class="clickable" id="button3">More</div>
+    </div>
+
 
     <script>
         webgazer.showVideo(false);
