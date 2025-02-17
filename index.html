@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dwell-Based Clicking with WebGazer.js</title>
+    <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <a>Home</a>
+        <a>Exercise</a>
+        <a>Create</a>
+        <a>Saved</a>
+
+    </div>
+    <h2> Look at the box for 1 second to "click" it</h2>
+    <div class="clickable" id="button1">Click Me</div>
+    <div class="clickable" id="button2">Or Me</div>
+
+    <script>
+        webgazer.showVideo(false);
+        // webgazer.params.videoViewer.top = '10px'; // Set the top position of the video feed
+        // webgazer.params.videoViewer.left = '50%'; // Set the left position of the video feed
+        // webgazer.params.videoViewer.marginLeft = '-160px'; // Center the video feed horizontally
+
+        let dwellTime = 1000; // Time (ms) to trigger a click
+        let gazeTarget = null;
+        let gazeTimer = null;
+
+        webgazer.setGazeListener((data, elapsedTime) => {
+            if (!data) return;
+
+            let x = data.x; // Gaze X coordinate
+            let y = data.y; // Gaze Y coordinate
+
+            let elements = document.elementsFromPoint(x, y); // Get elements at gaze position
+            let target = elements.find(el => el.classList.contains("clickable"));
+
+            if (target !== gazeTarget) {
+                if (gazeTarget) {
+                    gazeTarget.classList.remove("hovered"); // Remove hover effect
+                }
+                gazeTarget = target;
+                if (gazeTarget) {
+                    gazeTarget.classList.add("hovered"); // Apply hover effect
+                    startDwellTimer(gazeTarget);
+                } else {
+                    clearDwellTimer();
+                }
+            }
+        }).begin();
+
+        function startDwellTimer(element) {
+            clearDwellTimer(); // Reset any existing timer
+            gazeTimer = setTimeout(() => {
+                element.click(); // Simulate click event
+                console.log("Clicked:", element.id);
+            }, dwellTime);
+        }
+
+        function clearDwellTimer() {
+            if (gazeTimer) {
+                clearTimeout(gazeTimer);
+                gazeTimer = null;
+            }
+        }
+
+        // Example click event listener
+        document.querySelectorAll(".clickable").forEach(el => {
+            el.addEventListener("click", () => alert("You selected: " + el.id));
+        });
+    </script>
+</body>
+</html>
