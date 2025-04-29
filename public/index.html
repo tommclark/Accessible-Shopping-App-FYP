@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Dwell-Based Clicking with WebGazer.js</title>
-    <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+    <!-- <script src="https://webgazer.cs.brown.edu/webgazer.js"></script> -->
+    <script src="https://api.gazerecorder.com/GazeCloudAPI.js" ></script>
 </head>
 <body>
     <div class="navbar">
@@ -23,58 +24,68 @@
     </div>
 
 
-    <script>
-        webgazer.showVideo(false);
-        // webgazer.params.videoViewer.top = '10px'; // Set the top position of the video feed
-        // webgazer.params.videoViewer.left = '50%'; // Set the left position of the video feed
-        // webgazer.params.videoViewer.marginLeft = '-160px'; // Center the video feed horizontally
+    <script src="https://api.gazerecorder.com/GazeCloudAPI.js"></script>
+<script>
+    let dwellTime = 1000;
+    let gazeTarget = null;
+    let gazeTimer = null;
 
-        let dwellTime = 1000; // Time (ms) to trigger a click
-        let gazeTarget = null;
-        let gazeTimer = null;
+    GazeCloudAPI.StartEyeTracking();
 
-        webgazer.setGazeListener((data, elapsedTime) => {
-            if (!data) return;
+    GazeCloudAPI.OnResult = function(GazeData) {
+        if (GazeData.state === 0) {
+            const x = GazeData.docX;
+            const y = GazeData.docY;
 
-            let x = data.x; // Gaze X coordinate
-            let y = data.y; // Gaze Y coordinate
-
-            let elements = document.elementsFromPoint(x, y); // Get elements at gaze position
-            let target = elements.find(el => el.classList.contains("clickable"));
+            const elements = document.elementsFromPoint(x, y);
+            const target = elements.find(el => el.classList.contains("clickable"));
 
             if (target !== gazeTarget) {
                 if (gazeTarget) {
-                    gazeTarget.classList.remove("hovered"); // Remove hover effect
+                    gazeTarget.classList.remove("hovered");
                 }
                 gazeTarget = target;
                 if (gazeTarget) {
-                    gazeTarget.classList.add("hovered"); // Apply hover effect
+                    gazeTarget.classList.add("hovered");
                     startDwellTimer(gazeTarget);
                 } else {
                     clearDwellTimer();
                 }
             }
-        }).begin();
-
-        function startDwellTimer(element) {
-            clearDwellTimer(); // Reset any existing timer
-            gazeTimer = setTimeout(() => {
-                element.click(); // Simulate click event
-                console.log("Clicked:", element.id);
-            }, dwellTime);
         }
+    };
 
-        function clearDwellTimer() {
-            if (gazeTimer) {
-                clearTimeout(gazeTimer);
-                gazeTimer = null;
-            }
+    function startDwellTimer(element) {
+        clearDwellTimer();
+        gazeTimer = setTimeout(() => {
+            element.click();
+            console.log("Clicked:", element.id);
+        }, dwellTime);
+    }
+
+    function clearDwellTimer() {
+        if (gazeTimer) {
+            clearTimeout(gazeTimer);
+            gazeTimer = null;
         }
+    }
 
-        // Example click event listener
-        document.querySelectorAll(".clickable").forEach(el => {
-            el.addEventListener("click", () => alert("You selected: " + el.id));
-        });
-    </script>
+    document.querySelectorAll(".clickable").forEach(el => {
+        el.addEventListener("click", () => alert("You selected: " + el.id));
+    });
+
+
+    GazeCloudAPI.OnCalibrationComplete = function() {
+    console.log("Gaze Calibration Complete");
+};
+GazeCloudAPI.OnCamDenied = function() {
+    alert("Camera access was denied.");
+};
+GazeCloudAPI.OnError = function(msg) {
+    console.error("Gaze API Error:", msg);
+};
+
+</script>
+
 </body>
 </html>
