@@ -4,88 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Dwell-Based Clicking with WebGazer.js</title>
-    <!-- <script src="https://webgazer.cs.brown.edu/webgazer.js"></script> -->
-    <script src="https://api.gazerecorder.com/GazeCloudAPI.js" ></script>
+    <link rel="stylesheet" href="https://eyegestures.com/eyegestures.css">
+    <script src="https://eyegestures.com/eyegestures.js"></script>
+    <script src="script.js"></script>
+    <script src="spa-router.js"></script>
+    <title>Dwell-Based Clicking Application</title>
 </head>
+<video id="video" width="640" height="480" autoplay style="display: none;"></video>
+<div id="status" style="display : none;">Initializing...</div>
+<div id="error" style="display : none;"></div>
+
+
+<script src="https://www.lactame.com/lib/ml/6.0.0/ml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+
 <body>
     <div class="navbar">
-        <button class="modebutton">Mode</button>
-        <a href="calibration.html">calibration</a>
-        <a>Home</a>
-        <a>Categories</a>
-        <a>...</a>
-
-    </div>
-    <div class="container">
-        <div class="clickable" id="button1">Fresh</div>
-        <div class="clickable" id="button2">Frozen</div>
-        <div class="clickable" id="button3">More</div>
+        <a href="#home">Home</a>
+        <a href="#calibration">Calibration</a>
+        <a href="#categories">Categories</a>
     </div>
 
-
-    <script src="https://api.gazerecorder.com/GazeCloudAPI.js"></script>
-<script>
-    let dwellTime = 1000;
-    let gazeTarget = null;
-    let gazeTimer = null;
-
-    GazeCloudAPI.StartEyeTracking();
-
-    GazeCloudAPI.OnResult = function(GazeData) {
-        if (GazeData.state === 0) {
-            const x = GazeData.docX;
-            const y = GazeData.docY;
-
-            const elements = document.elementsFromPoint(x, y);
-            const target = elements.find(el => el.classList.contains("clickable"));
-
-            if (target !== gazeTarget) {
-                if (gazeTarget) {
-                    gazeTarget.classList.remove("hovered");
-                }
-                gazeTarget = target;
-                if (gazeTarget) {
-                    gazeTarget.classList.add("hovered");
-                    startDwellTimer(gazeTarget);
-                } else {
-                    clearDwellTimer();
-                }
-            }
-        }
-    };
-
-    function startDwellTimer(element) {
-        clearDwellTimer();
-        gazeTimer = setTimeout(() => {
-            element.click();
-            console.log("Clicked:", element.id);
-        }, dwellTime);
-    }
-
-    function clearDwellTimer() {
-        if (gazeTimer) {
-            clearTimeout(gazeTimer);
-            gazeTimer = null;
-        }
-    }
-
-    document.querySelectorAll(".clickable").forEach(el => {
-        el.addEventListener("click", () => alert("You selected: " + el.id));
-    });
-
-
-    GazeCloudAPI.OnCalibrationComplete = function() {
-    console.log("Gaze Calibration Complete");
-};
-GazeCloudAPI.OnCamDenied = function() {
-    alert("Camera access was denied.");
-};
-GazeCloudAPI.OnError = function(msg) {
-    console.error("Gaze API Error:", msg);
-};
-
-</script>
+    <div id="app">Loading...</div>
 
 </body>
-</html>
