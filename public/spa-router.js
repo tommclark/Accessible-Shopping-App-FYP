@@ -1,7 +1,7 @@
 const routes = {
-    home: 'views/home.html',
-    calibration: 'views/calibration.html',
-    categories: 'views/categories.html'
+    home: 'views/home.txt',
+    calibration: 'views/calibration.txt',
+    categories: 'views/categories.txt'
 };
 
 async function loadView(view) {
