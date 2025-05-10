@@ -1,0 +1,9 @@
+<body>
+
+    <div class="container">
+        <a class="clickable" href="#login">Login</a>
+        <a class="clickable" href="#register">Register</a>
+        <a class="clickable" onclick="logout()">Log Out</a>
+    </div>
+
+</body>
