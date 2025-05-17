@@ -74,10 +74,40 @@ async function submitLogin() {
             const loggedInText = document.querySelector('#loggedIn');
             loggedInText.textContent = `Logged in as ${result.userPIN}`;
             localStorage.setItem('loggedInUser', result.userPIN);
+            localStorage.setItem('isAdmin', result.isAdmin);
+            isLoggedIn = true;
+            setTimeout(() => {
+                refreshNavbar();
+            }, 100);
             window.location.href = '/#home'
-            console.log('Success');
+            console.log(`Successfully logged in as ${result.userPIN}, admin status ${result.isAdmin}`);
+            
+        }
+        else {
+            const errorMsg = await response.json();
+            alert(`Incorrect username or password: ${errorMsg}`);
+            resetKeypad();
+
         }
     } catch (error) {
         console.error('Error:', error);
+        errorText = document.querySelector('.keypad-display');
+        resetKeypad();
+        errorText.textContent = 'Incorrect username or password, please try again.';
+        
+    }
+}
+
+window.addEventListener('hashchange', () => {
+    resetKeypad();
+})
+
+function resetKeypad() {
+    enteredPIN = '';
+    enteredPasswordPIN = '';
+    isEnteringPassword = false;
+    const display = document.querySelector('.keypad-display');
+    if (display) {
+        updateKeypad();
     }
 }

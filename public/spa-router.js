@@ -3,7 +3,8 @@ const routes = {
     loginregister: 'views/loginregister.txt',
     categories: 'views/categories.txt',
     login: 'views/login.html',
-    register: 'views/register.html'
+    register: 'views/register.html',
+    admin: 'views/admin.html'
 };
 
 async function loadView(view) {
@@ -23,13 +24,37 @@ async function loadView(view) {
         const script = document.createElement('script');
         script.src = 'login.js';
         document.body.appendChild(script);
+        
+        // script.onload = () => {
+        //     if (typeof resetKeypad === 'function') {
+        //         resetKeypad();
+        //     }
+        // };
     }
+
+    if (isLoggedIn && view === 'loginregister' ) {
+        loginButton = document.querySelector('#loginButton');
+        registerButton = document.querySelector('#registerButton');
+    
+        loginButton.style.display = 'none';
+        registerButton.style.display = 'none';
+    }
+
+    
 }
 
 window.addEventListener('hashchange', () => {
     const view = location.hash.replace('#', '');
     loadView(view);
 });
+
+if (isLoggedIn && view === 'loginregister' ) {
+    loginButton = document.querySelector('#loginButton');
+    registerButton = document.querySelector('#registerButton');
+
+    loginButton.setAttribute('style', 'display:none');
+}
+
 
 // When page is loaded without a hash or is empty, default to home page (initial load)
 window.addEventListener('load', () => {

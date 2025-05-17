@@ -75,8 +75,25 @@ async function submitRegistration() {
             isEnteringPassword = false;
             updateKeypad();
             window.location.href = '/#home';
+        } else {
+            resetKeypad();
+            const display = document.querySelector('.keypad-display');
+            display.textContent = result || 'Registration failed. Try again.';
         }
     } catch (error) {
         console.error('Error:', error);
+        errorText = document.querySelector('.keypad-display');
+        resetKeypad();
+        errorText.textContent = 'Invalid username or password, please try again.';
+    }
+}
+
+function resetKeypad() {
+    enteredPIN = '';
+    enteredPasswordPIN = '';
+    isEnteringPassword = false;
+    const display = document.querySelector('.keypad-display');
+    if (display) {
+        updateKeypad();
     }
 }

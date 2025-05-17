@@ -45,17 +45,17 @@ app.post('/login', async (req, res) => {
         const { userPIN, password } = req.body;
         const user = await User.findOne({ userPIN });
         if (!user) {
-            return res.status(400).send('Incorrect PIN or password');
+            return res.status(400).json({ error: 'Incorrect PIN or password' });
         }
 
         const isPasswordCorrect = await user.comparePassword(password);
         if (!isPasswordCorrect) {
-            return res.status(400).send('Incorrect PIN or password');
+            return res.status(400).json({ error: 'Incorrect PIN or password' });
         }
-        res.status(200).json({ message: 'Login successful', userPIN });
+        res.status(200).json({ message: 'Login successful', userPIN, isAdmin : user.isAdmin });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Login failed');
+        res.status(500).json({ error: 'Login failed' });
     }
 });
 
@@ -86,8 +86,10 @@ app.get('/add-item2', async (req, res) => {
         });
         await newItem.save();
         res.send('Item added successfully!');
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Failed to add item');
     }
 });
+

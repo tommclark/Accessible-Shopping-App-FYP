@@ -4,6 +4,10 @@ let gazeTimer = null;
 let enteredPIN = ''; // Login for login & register
 let enteredPasswordPIN = '';
 let isEnteringPassword = false;
+let isLoggedIn = false;
+
+
+
 
 function onPoint(point) {
 
@@ -50,10 +54,39 @@ function clearDwellTimer() {
 function logout() {
     localStorage.removeItem('loggedInUser');
     const loggedInText = document.querySelector('#loggedIn');
+    isEnteringPassword = false;
+    isLoggedIn = false;
     if (loggedInText) {
         loggedInText.textContent = 'Login/Register';
     }
+
+    loginButton = document.querySelector('#loginButton');
+    registerButton = document.querySelector('#registerButton');
+
+    loginButton.style.display = 'block';
+    registerButton.style.display = 'block';
+    setTimeout(() => {
+        refreshNavbar();
+    }, 100);
+
     window.location.href = '/#loginregister';
+}
+
+function refreshNavbar() {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+    const loggedInText = document.querySelector('#loggedIn');
+    const adminSettings = document.querySelector('#admin-settings');
+
+    if (loggedInText && loggedInUser) {
+        loggedInText.textContent = `Logged in as: ${loggedInUser}`;
+    }
+
+    if (isLoggedIn && isAdmin && adminSettings) {
+        adminSettings.style.display = 'block';
+    } else if (adminSettings) {
+        adminSettings.style.display = 'none';
+    }
 }
 
 // Add click event listeners to clickable elements
@@ -64,9 +97,23 @@ document.querySelectorAll(".clickable").forEach(el => {
 document.addEventListener('DOMContentLoaded', () => {
     // const gestures = new EyeGestures('video', onPoint);
     // gestures.start();
+    refreshNavbar();
     const loggedInText = document.querySelector('#loggedIn');
     const loggedInUser = localStorage.getItem('loggedInUser');
+    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+    isLoggedIn = !!loggedInUser;
+
     if (loggedInUser && loggedInText) {
         loggedInText.textContent = `Logged in as: ${loggedInUser}`;
+    }
+
+
+    if (isLoggedIn && isAdmin) {
+        document.querySelector('#admin-settings').style.display = 'block';
+
+    }
+    else {
+        document.querySelector('#admin-settings').style.display = 'none';
     }
 });
