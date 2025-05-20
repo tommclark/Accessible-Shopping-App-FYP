@@ -23,6 +23,48 @@ mongoose.connect(process.env.MONGODB_URI, {})
 const Item = require('./models/Item');
 const User = require('./models/User');
 
+app.get('/freshMeatProducts', async (req, res) => {
+    const productCategory = 'Fresh Meat';
+    getProducts(productCategory, res);
+})
+
+app.get('/freshVegProducts', async (req, res) => {
+    const productCategory = 'Fresh Vegetables';
+    getProducts(productCategory, res);
+})
+
+app.get('/freshOtherProducts', async (req, res) => {
+    const productCategory = 'Fresh Other';
+    getProducts(productCategory, res);
+})
+
+
+app.get('/frozenMeatProducts', async (req, res) => {
+    const productCategory = 'Frozen Meat';
+    getProducts(productCategory, res);
+})
+
+app.get('/frozenVegProducts', async (req, res) => {
+    const productCategory = 'Frozen Meat';
+    getProducts(productCategory, res);
+})
+
+app.get('/frozenOtherProducts', async (req, res) => {
+    const productCategory = 'Other Frozen';
+    getProducts(productCategory, res);
+})
+
+
+async function getProducts(productCategory, res) {
+    try {
+        const products = await Item.find({ category: productCategory });
+        res.json(products);
+    } catch {
+        console.error('Error getting products');
+        res.status(500).json({ error: 'Failed to get products' });
+    }
+}
+
 app.post('/register', async (req, res) => {
     try {
         const { userPIN, password } = req.body;
@@ -52,44 +94,60 @@ app.post('/login', async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(400).json({ error: 'Incorrect PIN or password' });
         }
-        res.status(200).json({ message: 'Login successful', userPIN, isAdmin : user.isAdmin });
+        res.status(200).json({ message: 'Login successful', userPIN, isAdmin: user.isAdmin });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Login failed' });
     }
 });
 
-
-app.get('/add-item', async (req, res) => {
+app.post('/add-item', async (req, res) => {
     try {
-        const newItem = new Item({
-            name: 'Sample Item',
-            price: 10.99,
-            category: 'Sample Category'
-        });
-        await newItem.save();
-        res.send('Item added successfully!');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Failed to add item');
-    }
-});
+        const { name, price, category, description } = req.body;
 
-
-
-app.get('/add-item2', async (req, res) => {
-    try {
-        const newItem = new Item({
-            name: 'Sample Item 2',
-            price: 599.99,
-            category: 'Sample Category'
-        });
-        await newItem.save();
-        res.send('Item added successfully!');
+        const newItem = new Item({ name, price, category, description });
+        await newItem.save()
+        res.send('Successfully added item');
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Failed to add item');
+        res.status(500).send('Failed item');
     }
-});
+})
+
+
+
+
+// app.get('/add-item', async (req, res) => {
+//     try {
+//         const newItem = new Item({
+//             name: 'Sample Item',
+//             price: 10.99,
+//             category: 'Sample Category'
+//         });
+//         await newItem.save();
+//         res.send('Item added successfully!');
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send('Failed to add item');
+//     }
+// });
+
+
+
+// app.get('/add-item2', async (req, res) => {
+//     try {
+//         const newItem = new Item({
+//             name: 'Sample Item 2',
+//             price: 599.99,
+//             category: 'Sample Category'
+//         });
+//         await newItem.save();
+//         res.send('Item added successfully!');
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send('Failed to add item');
+//     }
+// });
 
