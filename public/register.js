@@ -9,9 +9,9 @@ function updateKeypad() {
     else {
         display.textContent = 'Enter PIN: ' + enteredPIN;
     }
-   }
+}
 
-// Handle keypad clicks
+
 document.querySelectorAll('#pinKeypad .clickable').forEach(button => {
     const value = button.textContent;
     if (!isNaN(value)) {

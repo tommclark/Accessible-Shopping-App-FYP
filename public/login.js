@@ -9,9 +9,9 @@ function updateKeypad() {
     else {
         display.textContent = 'Enter PIN: ' + enteredPIN;
     }
-   }
+}
 
-// Handle keypad clicks
+
 document.querySelectorAll('#pinKeypad .clickable').forEach(button => {
     const value = button.textContent;
     if (!isNaN(value)) {
@@ -81,7 +81,7 @@ async function submitLogin() {
             }, 100);
             window.location.href = '/#home'
             console.log(`Successfully logged in as ${result.userPIN}, admin status ${result.isAdmin}`);
-            
+
         }
         else {
             const errorMsg = await response.json();
@@ -94,7 +94,7 @@ async function submitLogin() {
         errorText = document.querySelector('.keypad-display');
         resetKeypad();
         errorText.textContent = 'Incorrect username or password, please try again.';
-        
+
     }
 }
 

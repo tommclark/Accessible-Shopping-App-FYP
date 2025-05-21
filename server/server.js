@@ -22,6 +22,33 @@ mongoose.connect(process.env.MONGODB_URI, {})
 
 const Item = require('./models/Item');
 const User = require('./models/User');
+const Order = require('./models/Order');
+
+app.post('/order', async (req, res) => {
+    try {
+        const { userPIN } = req.body;
+        const user = await User.findOne({ userPIN });
+        const order = new Order({ userPIN, items: user.basket.map(basketItems => ({ item: basketItems.item, quantity: basketItems.quantity })) });
+        await order.save();
+
+        user.basket = [];
+        await user.save();
+
+        res.status(201).json({ message: 'Order placed' });
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+app.get('/orders/:userPIN', async (req, res) => {
+    try {
+        const orders = await Order.find({ userPIN: req.params.userPIN }).populate('items.item');
+        res.json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+})
 
 app.get('/freshMeatProducts', async (req, res) => {
     const productCategory = 'Fresh Meat';
@@ -45,12 +72,12 @@ app.get('/frozenMeatProducts', async (req, res) => {
 })
 
 app.get('/frozenVegProducts', async (req, res) => {
-    const productCategory = 'Frozen Meat';
+    const productCategory = 'Frozen Vegetables';
     getProducts(productCategory, res);
 })
 
 app.get('/frozenOtherProducts', async (req, res) => {
-    const productCategory = 'Other Frozen';
+    const productCategory = 'Frozen Other';
     getProducts(productCategory, res);
 })
 
@@ -116,38 +143,53 @@ app.post('/add-item', async (req, res) => {
 })
 
 
+app.post('/basket/add', async (req, res) => {
+    try {
+        const { userPIN, itemID } = req.body;
+        const user = await User.findOne({ userPIN });
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+        const itemInBasket = user.basket.find((item) => item.item.toString() === itemID);
+        if (itemInBasket) {
+            itemInBasket.quantity += 1;
+        } else {
+            user.basket.push({ item: itemID, quantity: 1 });
+        }
+        await user.save();
+        res.status(200).json({ message: 'Item added to basket' });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.get('/basket/:userPIN', async (req, res) => {
+    try {
+        const user = await User.findOne({ userPIN: req.params.userPIN }).populate('basket.item');
+        if (!user) {
+            console.log('User not found')
+        }
+        res.json(user.basket);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/basket/remove', async (req, res) => {
+    try {
+        const { userPIN, itemID } = req.body;
+        const user = await User.findOne({ userPIN });
+        if (!user) {
+            console.log('User not found');
+        }
+        user.basket = user.basket.filter(basketItem => basketItem.item.toString() !== itemID);
+        await user.save();
+        res.json({ message: 'Item removed' });
+    } catch (error) {
+        console.error(error);
+    }
+})
 
 
-// app.get('/add-item', async (req, res) => {
-//     try {
-//         const newItem = new Item({
-//             name: 'Sample Item',
-//             price: 10.99,
-//             category: 'Sample Category'
-//         });
-//         await newItem.save();
-//         res.send('Item added successfully!');
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Failed to add item');
-//     }
-// });
 
-
-
-// app.get('/add-item2', async (req, res) => {
-//     try {
-//         const newItem = new Item({
-//             name: 'Sample Item 2',
-//             price: 599.99,
-//             category: 'Sample Category'
-//         });
-//         await newItem.save();
-//         res.send('Item added successfully!');
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Failed to add item');
-//     }
-// });
 

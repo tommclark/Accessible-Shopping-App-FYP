@@ -1,12 +1,25 @@
 const dwellTime = 1000; // The amount of time it takes to trigger a click in ms
 let gazeTarget = null;
 let gazeTimer = null;
-let enteredPIN = ''; // Login for login & register
+let enteredPIN = '';
 let enteredPasswordPIN = '';
 let isEnteringPassword = false;
 let isLoggedIn = false;
+let modeDisabled = false;
 
 
+function toggleMode() {
+    modeDisabled = !modeDisabled;
+    document.querySelectorAll('.clickable').forEach(element => {
+        if (!element.classList.contains('modebutton')) {
+            if (modeDisabled) {
+                element.classList.add('disabledclickable');
+            } else {
+                element.classList.remove('disabledclickable');
+            }
+        }
+    });
+}
 
 
 function onPoint(point) {
@@ -38,7 +51,7 @@ function onPoint(point) {
 function startDwellTimer(element) {
     clearDwellTimer();
     gazeTimer = setTimeout(() => {
-        element.click(); // Trigger a click on the element
+        element.click(); // Trigger a click on the element being looked at
         console.log("Clicked:", element.id);
     }, dwellTime);
 }
@@ -97,7 +110,17 @@ document.querySelectorAll(".clickable").forEach(el => {
 document.addEventListener('DOMContentLoaded', () => {
     // const gestures = new EyeGestures('video', onPoint);
     // gestures.start();
+    const backButton = document.querySelector('.backbutton');
+    backButton.addEventListener('click', () => {
+        window.history.back();
+    });
     refreshNavbar();
+
+    const modeButton = document.querySelector('.modebutton');
+    modeButton.addEventListener('click', () => {
+        toggleMode();
+    })
+
     const loggedInText = document.querySelector('#loggedIn');
     const loggedInUser = localStorage.getItem('loggedInUser');
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
