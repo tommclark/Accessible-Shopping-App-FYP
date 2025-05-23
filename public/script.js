@@ -108,8 +108,8 @@ document.querySelectorAll(".clickable").forEach(el => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // const gestures = new EyeGestures('video', onPoint);
-    // gestures.start();
+    const gestures = new EyeGestures('video', onPoint);
+    gestures.start();
     const backButton = document.querySelector('.backbutton');
     backButton.addEventListener('click', () => {
         window.history.back();
