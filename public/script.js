@@ -1,4 +1,4 @@
-const dwellTime = 1000; // The amount of time it takes to trigger a click in ms
+const dwellTime = 500; // The amount of time it takes to trigger a click in ms
 let gazeTarget = null;
 let gazeTimer = null;
 let enteredPIN = '';
